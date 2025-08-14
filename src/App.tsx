@@ -1,9 +1,10 @@
 import "./App.css";
+import HierarchyTable from "./components/HierarchyTable/HierarchyTable";
 
 const App = () => {
     return (
         <>
-            <h1 className="text-3xl font-bold underline">App</h1>
+            <HierarchyTable />
         </>
     );
 };
