@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { HierarchyNode } from "../../context/types";
 import { useDataContext } from "../../hooks/useDataContext";
+import React from "react";
 
 interface TableRowProps {
     item: HierarchyNode;
@@ -32,11 +33,8 @@ const TableRow = ({ item, depth }: TableRowProps) => {
     return (
         <>
             <tr
-                className="cursor-pointer hover:bg-gray-100"
+                className="cursor-pointer hover:bg-gray-900 odd:bg-surface-dark even:bg-surface-darker"
                 onClick={hasChildren ? toggleExpand : undefined}
-                style={{
-                    backgroundColor: depth > 0 ? "#f9fafb" : "transparent",
-                }}
             >
                 {allKeys.map((key, index) => {
                     const value = item.data[key];
@@ -77,13 +75,15 @@ const TableRow = ({ item, depth }: TableRowProps) => {
                     const allChildHeaders = [...childHeaders, "delete"];
 
                     return (
-                        <>
+                        <React.Fragment
+                            key={`group-${item.data.ID}-${groupIndex}`}
+                        >
                             {/* Nested headers */}
                             <tr
                                 key={`child-headers-${String(
                                     item.data.ID
                                 )}-${groupIndex}`}
-                                className="bg-gray-100"
+                                className="bg-primary text-black"
                             >
                                 {allChildHeaders.map((header) => (
                                     <th
@@ -112,7 +112,7 @@ const TableRow = ({ item, depth }: TableRowProps) => {
                                     depth={depth + 1}
                                 />
                             ))}
-                        </>
+                        </React.Fragment>
                     );
                 })}
         </>

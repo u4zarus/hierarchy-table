@@ -10,12 +10,12 @@ const HierarchyTable = () => {
 
     return (
         <table className="w-full">
-            <thead>
+            <thead className="text-black">
                 <tr>
                     {allMainHeaders.map((header) => (
                         <th
                             key={header}
-                            className="p-2 border-b text-left bg-gray-200"
+                            className="p-2 border-b text-left bg-primary"
                         >
                             {header}
                         </th>
