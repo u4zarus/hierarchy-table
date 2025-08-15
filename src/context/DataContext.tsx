@@ -50,11 +50,40 @@ export const DataProvider = ({ children }: DataProviderProps) => {
         return <div>Error: {error}</div>;
     }
 
-    const removeItem = (id: string, items: HierarchyNode[] | HierarchyNode) => {
-        if (Array.isArray(items)) {
-            const updatedItems = items.filter((item) => item.data.ID !== id);
-            setHierarchyData(updatedItems);
-        }
+    const removeRecursive = (
+        items: HierarchyNode[],
+        idToRemove: string
+    ): HierarchyNode[] => {
+        return items
+            .filter((item) => item.data.ID !== idToRemove)
+            .map((item) => {
+                // If an item has children, recursively filter them
+                if (item.children) {
+                    const newChildren = Object.entries(item.children).reduce(
+                        (acc, [key, childGroup]) => {
+                            const newRecords = removeRecursive(
+                                childGroup.records,
+                                idToRemove
+                            );
+                            if (newRecords.length > 0) {
+                                acc[key] = {
+                                    ...childGroup,
+                                    records: newRecords,
+                                };
+                            }
+                            return acc;
+                        },
+                        {} as Record<string, { records: HierarchyNode[] }>
+                    );
+                    return { ...item, children: newChildren };
+                }
+                return item;
+            });
+    };
+
+    const removeItem = (id: string) => {
+        const updatedData = removeRecursive(hierarchyData, id);
+        setHierarchyData(updatedData);
     };
 
     return (

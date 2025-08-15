@@ -4,9 +4,24 @@ import TableRow from "../TableRow/TableRow";
 const HierarchyTable = () => {
     const { hierarchyData } = useDataContext();
 
+    const mainHeaders =
+        hierarchyData.length > 0 ? Object.keys(hierarchyData[0].data) : [];
+    const allMainHeaders = [...mainHeaders, "delete"];
+
     return (
         <table className="w-full">
-            <thead></thead>
+            <thead>
+                <tr>
+                    {allMainHeaders.map((header) => (
+                        <th
+                            key={header}
+                            className="p-2 border-b text-left bg-gray-200"
+                        >
+                            {header}
+                        </th>
+                    ))}
+                </tr>
+            </thead>
             <tbody>
                 {hierarchyData.map((item, index) => (
                     <TableRow
