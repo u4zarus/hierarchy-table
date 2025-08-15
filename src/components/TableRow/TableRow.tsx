@@ -24,7 +24,7 @@ const TableRow = ({ item, depth }: TableRowProps) => {
 
     const handleDelete = (event: React.MouseEvent) => {
         event.stopPropagation();
-        removeItem(item.data.ID as string, item);
+        removeItem(item);
     };
 
     const allKeys = Object.keys(item.data);

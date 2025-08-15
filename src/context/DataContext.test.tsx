@@ -44,7 +44,7 @@ const TestConsumer = () => {
                 <span key={String(item.data.ID)}>{item.data.Name}</span>
             ))}
             <button
-                onClick={() => context.removeItem("1", context.hierarchyData)}
+                onClick={() => context.removeItem(context.hierarchyData[0])}
             >
                 Remove
             </button>
@@ -72,6 +72,7 @@ test("fetches data and provides it via context", async () => {
     });
 });
 
+// DataContext.test.tsx
 test("removeItem updates the hierarchyData", async () => {
     render(
         <DataProvider>
@@ -80,13 +81,46 @@ test("removeItem updates the hierarchyData", async () => {
     );
 
     const item = await screen.findByText(/Test character/i);
-    expect(item).toBeInTheDocument();
-
     screen.getByText("Remove").click();
 
-    await waitFor(() =>
-        expect(screen.queryByText(/Test character/i)).not.toBeInTheDocument()
+    await waitFor(() => expect(item).not.toBeInTheDocument());
+});
+
+test("removeItem removes nested child", async () => {
+    vi.spyOn(global, "fetch").mockResolvedValueOnce({
+        ok: true,
+        json: async () => nestedMockData,
+    } as Response);
+
+    const NestedConsumer = () => {
+        const context = useContext(DataContext)!;
+        const childNode =
+            context.hierarchyData[0]?.children?.groupA?.records[0];
+        return (
+            <div>
+                <span>{context.hierarchyData[0].data.Name}</span>
+                {childNode && <span>{childNode.data.Name}</span>}
+                {childNode && (
+                    <button onClick={() => context.removeItem(childNode)}>
+                        Remove Child
+                    </button>
+                )}
+            </div>
+        );
+    };
+
+    render(
+        <DataProvider>
+            <NestedConsumer />
+        </DataProvider>
     );
+
+    await screen.findByText("Parent");
+    const childElement = await screen.findByText("Child");
+
+    screen.getByText("Remove Child").click();
+
+    await waitFor(() => expect(childElement).not.toBeInTheDocument());
 });
 
 test("displays error message if fetch fails", async () => {
@@ -139,7 +173,10 @@ test("removeItem removes nested child", async () => {
                 )}
                 <button
                     onClick={() =>
-                        context.removeItem("2", context.hierarchyData)
+                        context.removeItem(
+                            context.hierarchyData[0]?.children?.groupA
+                                ?.records[0]
+                        )
                     }
                 >
                     Remove Child

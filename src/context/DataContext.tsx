@@ -3,10 +3,7 @@ import type { HierarchyNode } from "./types";
 
 interface DataContextType {
     hierarchyData: HierarchyNode[];
-    removeItem: (
-        id: string,
-        parentData: HierarchyNode[] | HierarchyNode
-    ) => void;
+    removeItem: (node: HierarchyNode) => void;
 }
 
 interface DataProviderProps {
@@ -52,18 +49,17 @@ export const DataProvider = ({ children }: DataProviderProps) => {
 
     const removeRecursive = (
         items: HierarchyNode[],
-        idToRemove: string
+        nodeToRemove: HierarchyNode // Changed to accept node
     ): HierarchyNode[] => {
         return items
-            .filter((item) => item.data.ID !== idToRemove)
+            .filter((item) => item !== nodeToRemove) // Compare by reference
             .map((item) => {
-                // If an item has children, recursively filter them
                 if (item.children) {
                     const newChildren = Object.entries(item.children).reduce(
                         (acc, [key, childGroup]) => {
                             const newRecords = removeRecursive(
                                 childGroup.records,
-                                idToRemove
+                                nodeToRemove
                             );
                             if (newRecords.length > 0) {
                                 acc[key] = {
@@ -81,8 +77,8 @@ export const DataProvider = ({ children }: DataProviderProps) => {
             });
     };
 
-    const removeItem = (id: string) => {
-        const updatedData = removeRecursive(hierarchyData, id);
+    const removeItem = (node: HierarchyNode) => {
+        const updatedData = removeRecursive(hierarchyData, node);
         setHierarchyData(updatedData);
     };
 
