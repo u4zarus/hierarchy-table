@@ -1,22 +1,29 @@
 import { useState } from "react";
 import type { HierarchyNode } from "../../context/types";
 import { useDataContext } from "../../hooks/useDataContext";
-import React from "react";
+import ChildTable from "../ChildTable/ChildTable";
 
 interface TableRowProps {
     item: HierarchyNode;
-    depth: number;
 }
 
-const TableRow = ({ item, depth }: TableRowProps) => {
+/**
+ * Renders a table row component that displays data from a HierarchyNode object.
+ * Optionally displays child data in a child table.
+ *
+ * @param {TableRowProps} props - The props object containing the item to display.
+ * @param {HierarchyNode} props.item - The HierarchyNode object containing the data to display.
+ * @return {JSX.Element} The table row component.
+ */
+const TableRow = ({ item }: TableRowProps) => {
     const [isExpanded, setIsExpanded] = useState(false);
     const { removeItem } = useDataContext();
 
-    const hasChildren =
-        item.children &&
-        Object.values(item.children).some(
-            (childGroup) => childGroup.records.length > 0
-        );
+    const hasChildren = item.children
+        ? Object.values(item.children).some(
+              (childGroup) => childGroup.records.length > 0
+          )
+        : false;
 
     const toggleExpand = () => {
         setIsExpanded(!isExpanded);
@@ -35,7 +42,7 @@ const TableRow = ({ item, depth }: TableRowProps) => {
                 className="cursor-pointer hover:bg-gray-900 odd:bg-surface-dark even:bg-surface-darker"
                 onClick={hasChildren ? toggleExpand : undefined}
             >
-                {/* Icon column */}
+                {/* Expand icon column */}
                 <td className="py-2 border-b">
                     {hasChildren && (
                         <span className="cursor-pointer">
@@ -48,10 +55,7 @@ const TableRow = ({ item, depth }: TableRowProps) => {
                 {allKeys.map((key) => {
                     const value = item.data[key];
                     return (
-                        <td
-                            key={`${key}-${String(item.data.ID)}`}
-                            className="py-2 border-b px-2"
-                        >
+                        <td key={key} className="py-2 border-b px-2">
                             {String(value)}
                         </td>
                     );
@@ -65,47 +69,9 @@ const TableRow = ({ item, depth }: TableRowProps) => {
                 </td>
             </tr>
 
-            {/* Recursively render child rows if expanded */}
-            {isExpanded &&
-                hasChildren &&
-                Object.values(item.children).map((childGroup, groupIndex) => {
-                    const childHeaders =
-                        childGroup.records.length > 0
-                            ? Object.keys(childGroup.records[0].data)
-                            : [];
-                    const allChildHeaders = [...childHeaders, "delete"];
-
-                    return (
-                        <React.Fragment
-                            key={`group-${item.data.ID}-${groupIndex}`}
-                        >
-                            {/* Nested headers */}
-                            <tr
-                                key={`child-headers-${String(
-                                    item.data.ID
-                                )}-${groupIndex}`}
-                                className="bg-primary text-black"
-                            >
-                                <th className="p-2 border-b bg-primary"></th>
-                                {allChildHeaders.map((header) => (
-                                    <th key={header} className="p-2 border-b">
-                                        {header}
-                                    </th>
-                                ))}
-                            </tr>
-                            {/* Child row */}
-                            {childGroup.records.map((childItem, childIndex) => (
-                                <TableRow
-                                    key={`${String(item.data.ID)}-${String(
-                                        childItem.data.ID
-                                    )}-${childIndex}`}
-                                    item={childItem}
-                                    depth={depth + 1}
-                                />
-                            ))}
-                        </React.Fragment>
-                    );
-                })}
+            {isExpanded && hasChildren && (
+                <ChildTable childrenData={item.children} />
+            )}
         </>
     );
 };

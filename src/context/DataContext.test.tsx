@@ -22,6 +22,21 @@ const nestedMockData = [
     },
 ];
 
+const duplicateIdMockData = [
+    {
+        data: { ID: "1", Name: "First Item" },
+        children: {},
+    },
+    {
+        data: { ID: "1", Name: "Second Item (same ID)" }, // Duplicate ID
+        children: {},
+    },
+    {
+        data: { ID: "2", Name: "Third Item" },
+        children: {},
+    },
+];
+
 beforeEach(() => {
     vi.spyOn(global, "fetch").mockResolvedValue({
         ok: true,
@@ -72,7 +87,6 @@ test("fetches data and provides it via context", async () => {
     });
 });
 
-// DataContext.test.tsx
 test("removeItem updates the hierarchyData", async () => {
     render(
         <DataProvider>
@@ -197,4 +211,52 @@ test("removeItem removes nested child", async () => {
     screen.getByRole("button", { name: "Remove Child" }).click();
 
     await waitFor(() => expect(childElement).not.toBeInTheDocument());
+});
+
+test("removeItem only deletes one node when duplicate IDs exist", async () => {
+    vi.spyOn(global, "fetch").mockResolvedValueOnce({
+        ok: true,
+        json: async () => duplicateIdMockData,
+    } as Response);
+
+    const DuplicateIdConsumer = () => {
+        const context = useContext(DataContext)!;
+
+        return (
+            <div>
+                {context.hierarchyData.map((item, index) => (
+                    <div key={`${item.data.ID}-${index}`}>
+                        <span>{item.data.Name}</span>
+                        <button
+                            onClick={() => context.removeItem(item)}
+                            data-testid={`delete-${index}`}
+                        >
+                            Delete
+                        </button>
+                    </div>
+                ))}
+            </div>
+        );
+    };
+
+    render(
+        <DataProvider>
+            <DuplicateIdConsumer />
+        </DataProvider>
+    );
+
+    await screen.findByText("First Item");
+    await screen.findByText("Second Item (same ID)");
+    await screen.findByText("Third Item");
+
+    const secondItemDeleteButton = screen.getByTestId("delete-1");
+    secondItemDeleteButton.click();
+
+    await waitFor(() => {
+        expect(
+            screen.queryByText("Second Item (same ID)")
+        ).not.toBeInTheDocument();
+        expect(screen.getByText("First Item")).toBeInTheDocument();
+        expect(screen.getByText("Third Item")).toBeInTheDocument();
+    });
 });
