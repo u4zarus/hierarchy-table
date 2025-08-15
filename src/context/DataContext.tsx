@@ -1,4 +1,10 @@
-import { createContext, useEffect, useState, type ReactNode } from "react";
+import {
+    createContext,
+    useCallback,
+    useEffect,
+    useState,
+    type ReactNode,
+} from "react";
 import type { HierarchyNode } from "./types";
 
 interface DataContextType {
@@ -45,14 +51,6 @@ export const DataProvider = ({ children }: DataProviderProps) => {
         fetchData();
     }, []);
 
-    if (loading) {
-        return <div>Loading...</div>;
-    }
-
-    if (error) {
-        return <div>Error: {error}</div>;
-    }
-
     /**
      * Recursively removes a node from a nested array of HierarchyNode objects.
      *
@@ -90,16 +88,17 @@ export const DataProvider = ({ children }: DataProviderProps) => {
             });
     };
 
-    /**
-     * Removes a node from the hierarchyData state.
-     *
-     * @param {HierarchyNode} node - The node to remove from the hierarchyData.
-     * @return {void} This function does not return anything.
-     */
-    const removeItem = (node: HierarchyNode) => {
-        const updatedData = removeRecursive(hierarchyData, node);
-        setHierarchyData(updatedData);
-    };
+    const removeItem = useCallback((node: HierarchyNode) => {
+        setHierarchyData((prevData) => removeRecursive(prevData, node));
+    }, []);
+
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+
+    if (error) {
+        return <div>Error: {error}</div>;
+    }
 
     return (
         <DataContext.Provider value={{ hierarchyData, removeItem }}>
