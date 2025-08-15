@@ -9,14 +9,12 @@ const HierarchyTable = () => {
     const allMainHeaders = [...mainHeaders, "delete"];
 
     return (
-        <table className="w-full">
+        <table className="w-full table-fixed">
             <thead className="text-black">
                 <tr>
+                    <th className="p-2 border-b bg-primary"></th>
                     {allMainHeaders.map((header) => (
-                        <th
-                            key={header}
-                            className="p-2 border-b text-left bg-primary"
-                        >
+                        <th key={header} className="p-2 border-b bg-primary">
                             {header}
                         </th>
                     ))}

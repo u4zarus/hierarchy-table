@@ -9,3 +9,9 @@
 body {
     @apply text-white bg-surface-dark;
 }
+
+td,
+th,
+tr {
+    @apply whitespace-nowrap overflow-hidden text-ellipsis h-14 text-center;
+}

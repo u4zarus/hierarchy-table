@@ -27,7 +27,6 @@ const TableRow = ({ item, depth }: TableRowProps) => {
         removeItem(item.data.ID as string, item);
     };
 
-    const icon = hasChildren ? (isExpanded ? "▼" : "►") : "";
     const allKeys = Object.keys(item.data);
 
     return (
@@ -36,28 +35,30 @@ const TableRow = ({ item, depth }: TableRowProps) => {
                 className="cursor-pointer hover:bg-gray-900 odd:bg-surface-dark even:bg-surface-darker"
                 onClick={hasChildren ? toggleExpand : undefined}
             >
-                {allKeys.map((key, index) => {
-                    const value = item.data[key];
-                    const isFirstCell = index === 0;
+                {/* Icon column */}
+                <td className="py-2 border-b">
+                    {hasChildren && (
+                        <span className="cursor-pointer">
+                            {isExpanded ? "▼" : "►"}
+                        </span>
+                    )}
+                </td>
 
+                {/* Data columns */}
+                {allKeys.map((key) => {
+                    const value = item.data[key];
                     return (
                         <td
-                            key={`${key}-${String(item.data.ID)}`} // Avoiding duplicate ID (48)
-                            className="py-2 border-b"
-                            style={{
-                                paddingLeft: isFirstCell
-                                    ? `${depth * 20 + 8}px`
-                                    : "8px",
-                            }}
+                            key={`${key}-${String(item.data.ID)}`}
+                            className="py-2 border-b px-2"
                         >
-                            {isFirstCell && (
-                                <span className="mr-2">{icon}</span>
-                            )}
                             {String(value)}
                         </td>
                     );
                 })}
-                <td className="py-2 border-b">
+
+                {/* Delete button column */}
+                <td className="py-2 border-b text-center">
                     <button onClick={handleDelete} className="cursor-pointer">
                         ❌
                     </button>
@@ -85,19 +86,9 @@ const TableRow = ({ item, depth }: TableRowProps) => {
                                 )}-${groupIndex}`}
                                 className="bg-primary text-black"
                             >
+                                <th className="p-2 border-b bg-primary"></th>
                                 {allChildHeaders.map((header) => (
-                                    <th
-                                        key={header}
-                                        className="p-2 border-b text-center"
-                                        style={{
-                                            paddingLeft:
-                                                header === allChildHeaders[0]
-                                                    ? `${
-                                                          (depth + 1) * 20 + 8
-                                                      }px`
-                                                    : "8px",
-                                        }}
-                                    >
+                                    <th key={header} className="p-2 border-b">
                                         {header}
                                     </th>
                                 ))}
