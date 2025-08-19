@@ -1,8 +1,8 @@
-import { useContext } from "react";
 import { render, screen, waitFor } from "@testing-library/react";
-import DataContext, { DataProvider } from "./DataContext";
+import { DataProvider } from "./DataContext";
 import "@testing-library/jest-dom";
 import { vi, beforeEach, afterEach, test, expect } from "vitest";
+import { useDataContext } from "../hooks/useDataContext";
 
 const mockData = [
     {
@@ -49,10 +49,8 @@ afterEach(() => {
 });
 
 const TestConsumer = () => {
-    const context = useContext(DataContext);
-    if (!context) {
-        throw new Error("DataContext is not available");
-    }
+    const context = useDataContext();
+
     return (
         <div>
             {context.hierarchyData.map((item) => (
@@ -107,7 +105,7 @@ test("removeItem removes nested child", async () => {
     } as Response);
 
     const NestedConsumer = () => {
-        const context = useContext(DataContext)!;
+        const context = useDataContext();
         const childNode =
             context.hierarchyData[0]?.children?.groupA?.records[0];
         return (
@@ -154,15 +152,41 @@ test("displays error message if fetch fails", async () => {
 });
 
 test("removeItem with non-existing ID does not change data", async () => {
+    const NonExistingConsumer = () => {
+        const context = useDataContext();
+
+        return (
+            <div>
+                {context.hierarchyData.map((item) => (
+                    <span key={String(item.data.ID)}>{item.data.Name}</span>
+                ))}
+                <button
+                    onClick={() =>
+                        context.removeItem({
+                            data: { ID: "999", Name: "Fake" },
+                            children: {},
+                        })
+                    }
+                >
+                    Try Remove Non-existing
+                </button>
+            </div>
+        );
+    };
+
     render(
         <DataProvider>
-            <TestConsumer />
+            <NonExistingConsumer />
         </DataProvider>
     );
 
-    await screen.findByText(/Test character/i);
+    const existingItem = await screen.findByText(/Test character/i);
 
-    screen.getByText("Remove").click();
+    screen.getByText("Try Remove Non-existing").click();
+
+    await waitFor(() => {
+        expect(existingItem).toBeInTheDocument();
+    });
 });
 
 test("removeItem removes nested child", async () => {
@@ -172,7 +196,8 @@ test("removeItem removes nested child", async () => {
     } as Response);
 
     const NestedConsumer = () => {
-        const context = useContext(DataContext)!;
+        const context = useDataContext();
+
         return (
             <div>
                 {context.hierarchyData.map((item) => (
@@ -220,7 +245,7 @@ test("removeItem only deletes one node when duplicate IDs exist", async () => {
     } as Response);
 
     const DuplicateIdConsumer = () => {
-        const context = useContext(DataContext)!;
+        const context = useDataContext();
 
         return (
             <div>
