@@ -36,9 +36,9 @@ const ChildTable = ({ childrenData }: ChildTableProps) => {
                 return (
                     <React.Fragment key={`group-${groupIndex}`}>
                         <tr className="bg-primary text-black">
-                            <th className="p-2 border-b bg-primary"></th>
+                            <th className="p-2 border-y bg-primary"></th>
                             {allChildHeaders.map((header) => (
-                                <th key={header} className="p-2 border-b">
+                                <th key={header} className="p-2 border-y">
                                     {header}
                                 </th>
                             ))}

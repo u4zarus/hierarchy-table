@@ -43,7 +43,7 @@ const TableRow = ({ item }: TableRowProps) => {
                 onClick={hasChildren ? toggleExpand : undefined}
             >
                 {/* Expand icon column */}
-                <td className="py-2 border-b">
+                <td className="py-2 border-y">
                     {hasChildren && (
                         <span className="cursor-pointer">
                             {isExpanded ? "▼" : "►"}
@@ -55,14 +55,14 @@ const TableRow = ({ item }: TableRowProps) => {
                 {allKeys.map((key) => {
                     const value = item.data[key];
                     return (
-                        <td key={key} className="py-2 border-b px-2">
+                        <td key={key} className="py-2 border-y px-2">
                             {String(value)}
                         </td>
                     );
                 })}
 
                 {/* Delete button column */}
-                <td className="py-2 border-b text-center">
+                <td className="py-2 border-y text-center">
                     <button onClick={handleDelete} className="cursor-pointer">
                         ❌
                     </button>

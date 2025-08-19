@@ -15,3 +15,8 @@ th,
 tr {
     @apply break-words overflow-hidden text-ellipsis h-14 text-center;
 }
+
+td:last-child,
+th:last-child {
+    @apply border-r;
+}
