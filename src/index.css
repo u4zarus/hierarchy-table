@@ -13,5 +13,5 @@ body {
 td,
 th,
 tr {
-    @apply overflow-hidden text-ellipsis h-14 text-center;
+    @apply break-words overflow-hidden text-ellipsis h-14 text-center;
 }

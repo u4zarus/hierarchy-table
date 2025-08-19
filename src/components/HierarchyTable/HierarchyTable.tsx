@@ -46,6 +46,16 @@ const HierarchyTable = () => {
                             item={item}
                         />
                     ))}
+                {hierarchyData.length === 0 && (
+                    <tr>
+                        <td
+                            colSpan={allMainHeaders.length + 1}
+                            className="p-2 text-center"
+                        >
+                            No data available
+                        </td>
+                    </tr>
+                )}
             </tbody>
         </table>
     );
