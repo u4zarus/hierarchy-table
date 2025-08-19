@@ -1,19 +1,6 @@
 import { useDataContext } from "../../hooks/useDataContext";
 import TableRow from "../TableRow/TableRow";
 
-const headers = [
-    "ID",
-    "Name",
-    "Gender",
-    "Ability",
-    "Minimal distance",
-    "Weight",
-    "Born",
-    "In space since",
-    "Beer consumption (l/y)",
-    "Knows the answer?",
-]; // Explicitely defined so the headers don't disappear when the table is empty
-
 /**
  * A component that renders a table with the hierarchyData from the DataContext.
  * The table has a fixed layout and displays all the data in the hierarchyData
@@ -22,7 +9,7 @@ const headers = [
  * @returns {JSX.Element} The rendered table component.
  */
 const HierarchyTable = () => {
-    const { hierarchyData } = useDataContext();
+    const { hierarchyData, headers } = useDataContext();
 
     const allMainHeaders = [...headers, "delete"];
 

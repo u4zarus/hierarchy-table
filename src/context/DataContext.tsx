@@ -9,6 +9,7 @@ import type { HierarchyNode } from "./types";
 
 interface DataContextType {
     hierarchyData: HierarchyNode[];
+    headers: string[];
     removeItem: (node: HierarchyNode) => void;
 }
 
@@ -26,6 +27,7 @@ const DataContext = createContext<DataContextType | undefined>(undefined);
  */
 export const DataProvider = ({ children }: DataProviderProps) => {
     const [hierarchyData, setHierarchyData] = useState<HierarchyNode[]>([]);
+    const [headers, setHeaders] = useState<string[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -40,6 +42,11 @@ export const DataProvider = ({ children }: DataProviderProps) => {
                 }
                 const data: HierarchyNode[] = await response.json();
                 setHierarchyData(data);
+
+                if (data.length > 0) {
+                    const firstItem = data[0].data;
+                    setHeaders(Object.keys(firstItem));
+                }
             } catch (error) {
                 setError("Error fetching data");
                 console.error("Error fetching data:", error);
@@ -101,7 +108,7 @@ export const DataProvider = ({ children }: DataProviderProps) => {
     }
 
     return (
-        <DataContext.Provider value={{ hierarchyData, removeItem }}>
+        <DataContext.Provider value={{ hierarchyData, headers, removeItem }}>
             {children}
         </DataContext.Provider>
     );
