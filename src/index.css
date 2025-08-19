@@ -13,5 +13,5 @@ body {
 td,
 th,
 tr {
-    @apply whitespace-nowrap overflow-hidden text-ellipsis h-14 text-center;
+    @apply overflow-hidden text-ellipsis h-14 text-center;
 }
