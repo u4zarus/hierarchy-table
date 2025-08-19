@@ -60,10 +60,10 @@ export const DataProvider = ({ children }: DataProviderProps) => {
      */
     const removeRecursive = (
         items: HierarchyNode[],
-        nodeToRemove: HierarchyNode // Changed to accept node
+        nodeToRemove: HierarchyNode
     ): HierarchyNode[] => {
         return items
-            .filter((item) => item !== nodeToRemove) // Compare by reference
+            .filter((item) => item !== nodeToRemove)
             .map((item) => {
                 if (item.children) {
                     const newChildren = Object.entries(item.children).reduce(

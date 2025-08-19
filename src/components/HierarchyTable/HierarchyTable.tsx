@@ -15,14 +15,11 @@ const headers = [
 ]; // Explicitely defined so the headers don't disappear when the table is empty
 
 /**
- * Renders a table to display the hierarchy data.
+ * A component that renders a table with the hierarchyData from the DataContext.
+ * The table has a fixed layout and displays all the data in the hierarchyData
+ * array. The headers are defined in the headers const above.
  *
- * This component uses the `useDataContext` hook to get the `hierarchyData`
- * from the context. It then creates the table headers and rows based on the
- * `hierarchyData`. The table is displayed with fixed width and scrollable
- * content.
- *
- * @return {JSX.Element} The rendered table component.
+ * @returns {JSX.Element} The rendered table component.
  */
 const HierarchyTable = () => {
     const { hierarchyData } = useDataContext();
